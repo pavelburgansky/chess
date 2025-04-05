@@ -3,6 +3,7 @@ import { Colors } from "../Colors";
 import { Figure, FigureNames } from "./Figure";
 import whiteLogo from "../../assets/bishop-w.svg"
 import blackLogo from "../../assets/bishop-b.svg"
+import { Board } from "../Board";
 export class Bishop extends Figure {
     constructor(color: Colors, cell: Cell) {
         super(color, cell);
@@ -10,8 +11,8 @@ export class Bishop extends Figure {
         this.name = FigureNames.BISHOP;
     }
 
-    override canMove(target: Cell): boolean {
-        if(!super.canMove(target)) return false
+    override canMove(target: Cell,oldBoard:Board): boolean {
+        if(!super.canMove(target,oldBoard)) return false
         return this.cell.isEmptyDiagonal(target);
 
     }

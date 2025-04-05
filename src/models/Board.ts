@@ -22,17 +22,50 @@ export class Board {
             this.cells.push(row)
         }
     }
+    cloneBoard(): Board {
+        const newBoard = new Board();
+        newBoard.cells = [];
+      
+        // 1. Сначала создаём пустые клетки
+        for (let y = 0; y < 8; y++) {
+          const row: Cell[] = [];
+          for (let x = 0; x < 8; x++) {
+            const oldCell = this.getCell(x, y);
+            const newCell = new Cell(newBoard, x, y, oldCell.color, null);
+            row.push(newCell);
+          }
+          newBoard.cells.push(row);
+        }
+      
+        // 2. Потом копируем фигуры, ссылаясь на уже созданные новые клетки
+        for (let y = 0; y < 8; y++) {
+          for (let x = 0; x < 8; x++) {
+            const oldFigure = this.getCell(x, y).figure;
+            if (oldFigure) {
+              const newCell = newBoard.getCell(x, y);
+              const newFigure = oldFigure.getCopy(newCell);
+              newCell.figure = newFigure;
+            }
+          }
+        }
+      
+        return newBoard;
+      }
+      
+    
+
     public getCopyBoard():Board{
        const newBoard:Board = new Board();
        newBoard.cells = this.cells;
        return newBoard
     }
-    public highlightCells(selectedCell:Cell|null) {
+    
+    public highlightCells(selectedCell:Cell|null,oldBoard:Board) {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i]
             for (let j = 0; j < row.length; j++) {
                const target = row[j]
-               target.available = !!selectedCell?.figure?.canMove(target)
+               target.available = !!selectedCell?.figure?.canMove(target,oldBoard)
             }
         }
     }
