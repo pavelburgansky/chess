@@ -149,10 +149,11 @@ export class Cell {
         return false
     }
     public passentForWhite(target: Cell, oldBoard: Board): boolean {
+        if(oldBoard.cells.length == 0) return false
         if ((this.x - 1 == target.x && this.y - 1 == target.y) && (!target.figure)) {
-            if (
+            if (oldBoard.getCell(target.x, target.y - 1)&&(
             (oldBoard.getCell(target.x, target.y - 1).figure?.name == FigureNames.PAWN&& oldBoard.getCell(target.x, target.y - 1).figure?.firstMove)
-            && (target.board.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y + 1).figure?.color !== this.figure?.color)) {
+            && (target.board.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y + 1).figure?.color !== this.figure?.color))) {
                 //console.log(oldBoard.getCell(target.x, target.y - 1))
                 return true
             }
