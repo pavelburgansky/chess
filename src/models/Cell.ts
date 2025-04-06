@@ -2,6 +2,7 @@ import { Board } from "./Board";
 import { Colors } from "./Colors";
 import { Figure, FigureNames } from "./figures/Figure";
 import { Queen } from "./figures/Queen";
+import { Rook } from "./figures/Rook";
 
 export class Cell {
     readonly x: number;
@@ -43,10 +44,10 @@ export class Cell {
         }
         const min: number = Math.min(this.y, target.y)
         const max: number = Math.max(this.y, target.y)
-        console.log('current: ')
-        console.log(this)
-        console.log('turget: ')
-        console.log(target)
+        // console.log('current: ')
+        // console.log(this)
+        // console.log('turget: ')
+        // console.log(target)
         for (let y = min + 1; y < max; y++) {
             if (!this.board.getCell(this.x, y).isEmpty()) {
                 return false
@@ -119,7 +120,7 @@ export class Cell {
             }
         }
         else if (this.figure?.color == Colors.BLACK) {
-            if (this.passentForBlack(target,oldBoard)) return true
+            if (this.passentForBlack(target, oldBoard)) return true
             if (target.figure) {
                 const absX = Math.abs(this.x - target.x)
                 const absY = Math.abs(this.y - target.y)
@@ -149,34 +150,37 @@ export class Cell {
         return false
     }
     public passentForWhite(target: Cell, oldBoard: Board): boolean {
-        if(oldBoard.cells.length == 0) return false
+        if (oldBoard.cells.length == 0) return false
         if ((this.x - 1 == target.x && this.y - 1 == target.y) && (!target.figure)) {
-            if (oldBoard.getCell(target.x, target.y - 1)&&(
-            (oldBoard.getCell(target.x, target.y - 1).figure?.name == FigureNames.PAWN&& oldBoard.getCell(target.x, target.y - 1).figure?.firstMove)
-            && (target.board.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y + 1).figure?.color !== this.figure?.color))) {
+            if (oldBoard.getCell(target.x, target.y - 1) && (
+                (oldBoard.getCell(target.x, target.y - 1).figure?.name == FigureNames.PAWN && oldBoard.getCell(target.x, target.y - 1).figure?.firstMove)
+                && (target.board.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y + 1).figure?.color !== this.figure?.color))) {
                 //console.log(oldBoard.getCell(target.x, target.y - 1))
                 return true
             }
         }
         if ((this.x + 1 == target.x && this.y - 1 == target.y) && (!target.figure)) {
-            if ((oldBoard.getCell(target.x, target.y - 1).figure?.name == FigureNames.PAWN&& oldBoard.getCell(target.x, target.y - 1).figure?.firstMove)
-            && (target.board.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y + 1).figure?.color !== this.figure?.color)) return true
+            if ((oldBoard.getCell(target.x, target.y - 1).figure?.name == FigureNames.PAWN && oldBoard.getCell(target.x, target.y - 1).figure?.firstMove)
+                && (target.board.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y + 1).figure?.color !== this.figure?.color)) return true
         }
         return false
     }
-    public passentForBlack(target: Cell,oldBoard:Board): boolean {
+    public passentForBlack(target: Cell, oldBoard: Board): boolean {
         if ((this.x + 1 == target.x && this.y + 1 == target.y) && (!target.figure)) {
-            if ((oldBoard.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN&& oldBoard.getCell(target.x, target.y + 1).figure?.firstMove)
-            && (target.board.getCell(target.x, target.y - 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y - 1).figure?.color !== this.figure?.color)) return true
+            if ((oldBoard.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN && oldBoard.getCell(target.x, target.y + 1).figure?.firstMove)
+                && (target.board.getCell(target.x, target.y - 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y - 1).figure?.color !== this.figure?.color)) return true
         }
         if ((this.x - 1 == target.x && this.y + 1 == target.y) && (!target.figure)) {
-            if ((oldBoard.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN&& oldBoard.getCell(target.x, target.y + 1).figure?.firstMove)
-            && (target.board.getCell(target.x, target.y - 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y - 1).figure?.color !== this.figure?.color)) return true
+            if ((oldBoard.getCell(target.x, target.y + 1).figure?.name == FigureNames.PAWN && oldBoard.getCell(target.x, target.y + 1).figure?.firstMove)
+                && (target.board.getCell(target.x, target.y - 1).figure?.name == FigureNames.PAWN && target.board.getCell(target.x, target.y - 1).figure?.color !== this.figure?.color)) return true
         }
         return false
     }
     isEmptyForKing(target: Cell): boolean {
-
+        if (this.longCastlingWhite(target)) return true
+        if (this.shortCastlingWhite(target)) return true
+        if (this.longCastlingBlack(target)) return true
+        if (this.shortCastlingBlack(target)) return true
         const absX = Math.abs(this.x - target.x)
         const absY = Math.abs(this.y - target.y)
         if (
@@ -189,21 +193,68 @@ export class Cell {
             return false
         }
         return true
-
+    }
+    public longCastlingWhite(target: Cell): boolean {
+        if (this.figure?.firstMove && target.board.getCell(0, 7).figure?.firstMove && target.board.getCell(0, 7).figure?.name == FigureNames.ROOK) {
+            if (this.y == target.y && this.x - target.x == 2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure && !target.board.getCell(target.x + 1, target.y).figure) {
+                return true
+            }
+        }
+        return false
+    }
+    public shortCastlingWhite(target: Cell): boolean {
+        if (this.figure?.firstMove && target.board.getCell(7, 7).figure?.firstMove && target.board.getCell(7, 7).figure?.name == FigureNames.ROOK) {
+            if (this.y == target.y && this.x - target.x == -2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure) {
+                return true
+            }
+        }
+        return false
+    }
+    public longCastlingBlack(target: Cell): boolean {
+        if (this.figure?.firstMove && target.board.getCell(0, 0).figure?.firstMove && target.board.getCell(0, 0).figure?.name == FigureNames.ROOK) {
+            if (this.y == target.y && this.x - target.x == 2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure && !target.board.getCell(target.x + 1, target.y).figure) {
+                return true
+            }
+        }
+        return false
+    }
+    public shortCastlingBlack(target: Cell): boolean {
+        if (this.figure?.firstMove && target.board.getCell(7, 0).figure?.firstMove && target.board.getCell(7, 0).figure?.name == FigureNames.ROOK) {
+            if (this.y == target.y && this.x - target.x == -2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure) {
+                return true
+            }
+        }
+        return false
     }
     public moveFigure(target: Cell, oldBoard: Board) {
-        // console.log("oldBoard")
-        // console.log(this.board.oldBoard)
-        // console.log("current")
-        // console.log(this.board)
         if (this.figure && this.figure?.canMove(target, oldBoard)) {
             if (this.passentForWhite(target, oldBoard)) {
                 target.board.getCell(target.x, target.y + 1).figure = null
             }
-            if (this.passentForBlack(target,oldBoard)) {
+            if (this.passentForBlack(target, oldBoard)) {
                 target.board.getCell(target.x, target.y - 1).figure = null
             }
-            target.figure = this.figure
+            if (this.longCastlingWhite(target)) {
+                let longCastlingRook:Rook = new Rook(Colors.WHITE,this.board.getCell(3,7));
+                longCastlingRook.firstMove = false
+                this.board.getCell(0, 7).figure = null;  
+            }
+            if (this.shortCastlingWhite(target)) {
+                let longCastlingRook:Rook = new Rook(Colors.WHITE,this.board.getCell(5,7));
+                longCastlingRook.firstMove = false
+                this.board.getCell(7, 7).figure = null;  
+            }
+            if (this.longCastlingBlack(target)) {
+                let longCastlingRook:Rook = new Rook(Colors.BLACK,this.board.getCell(3,0));
+                longCastlingRook.firstMove = false
+                this.board.getCell(0, 0).figure = null;  
+            }
+            if (this.shortCastlingBlack(target)) {
+                let longCastlingRook:Rook = new Rook(Colors.BLACK,this.board.getCell(5,0));
+                longCastlingRook.firstMove = false
+                this.board.getCell(7, 0).figure = null;  
+            }
+            target.figure = this.figure;
             this.figure.firstMove = false
             target.figure.cell = target;
             this.figure = null
@@ -212,7 +263,6 @@ export class Cell {
                 target.figure = queen;
                 target.figure.cell = target
             }
-
         }
     }
 }
