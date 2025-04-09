@@ -23,19 +23,17 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, resetBoard, passTurn,
     if (selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell, oldBoard)) {
       let boardold = board.cloneBoard()
       setOldBoard(boardold)
-
       selectedCell.moveFigure(cell, oldBoard)
       setPassTurn(value => value == "bg-amber-50" ? "bg-green-700" : "bg-amber-50")
       setSelectedCell(null)
-      console.log("oldBoard")
-      console.log(oldBoard)
-      console.log("board")
-      console.log(board)
+      // console.log("current board:")
+       console.log(board)
     }
   }
   useEffect(() => {
     highlightCells();
   }, [selectedCell])
+
   const highlightCells = () => {
     board.highlightCells(selectedCell, oldBoard)
     updateBoard()

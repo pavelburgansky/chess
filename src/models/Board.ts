@@ -5,7 +5,7 @@ import { King } from "./figures/King";
 import { Pawn } from "./figures/Pawn";
 import { Queen } from "./figures/Queen";
 import { Rook } from "./figures/Rook";
-import { Knight } from "./figures/knight";
+import { Knight } from "./figures/Knight";
 export class Board {
     cells: Cell[][] = []
     public initCels() {
@@ -13,7 +13,7 @@ export class Board {
             const row: Cell[] = []
             for (let j = 0; j < 8; j++) {
                 if ((i + j) % 2 == 0) {
-                    row.push(new Cell(this, j, i, Colors.WHITE,null))
+                    row.push(new Cell(this, j, i, Colors.WHITE, null))
                 }
                 else {
                     row.push(new Cell(this, j, i, Colors.BLACK, null))
@@ -25,47 +25,43 @@ export class Board {
     cloneBoard(): Board {
         const newBoard = new Board();
         newBoard.cells = [];
-      
-        // 1. Сначала создаём пустые клетки
         for (let y = 0; y < 8; y++) {
-          const row: Cell[] = [];
-          for (let x = 0; x < 8; x++) {
-            const oldCell = this.getCell(x, y);
-            const newCell = new Cell(newBoard, x, y, oldCell.color, null);
-            row.push(newCell);
-          }
-          newBoard.cells.push(row);
-        }
-      
-        // 2. Потом копируем фигуры, ссылаясь на уже созданные новые клетки
-        for (let y = 0; y < 8; y++) {
-          for (let x = 0; x < 8; x++) {
-            const oldFigure = this.getCell(x, y).figure;
-            if (oldFigure) {
-              const newCell = newBoard.getCell(x, y);
-              const newFigure = oldFigure.getCopy(newCell);
-              newCell.figure = newFigure;
+            const row: Cell[] = [];
+            for (let x = 0; x < 8; x++) {
+                const oldCell = this.getCell(x, y);
+                const newCell = new Cell(newBoard, x, y, oldCell.color, null);
+                row.push(newCell);
             }
-          }
+            newBoard.cells.push(row);
         }
-      
-        return newBoard;
-      }
-      
-    
+        for (let y = 0; y < 8; y++) {
+            for (let x = 0; x < 8; x++) {
+                const oldFigure = this.getCell(x, y).figure;
+                if (oldFigure) {
+                    const newCell = newBoard.getCell(x, y);
+                    const newFigure = oldFigure.getCopy(newCell);
+                    newCell.figure = newFigure;
+                }
+            }
+        }
 
-    public getCopyBoard():Board{
-       const newBoard:Board = new Board();
-       newBoard.cells = this.cells;
-       return newBoard
+        return newBoard;
     }
-    
-    public highlightCells(selectedCell:Cell|null,oldBoard:Board) {
+
+
+
+    public getCopyBoard(): Board {
+        const newBoard: Board = new Board();
+        newBoard.cells = this.cells;
+        return newBoard
+    }
+
+    public highlightCells(selectedCell: Cell | null, oldBoard: Board) {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i]
             for (let j = 0; j < row.length; j++) {
-               const target = row[j]
-               target.available = !!selectedCell?.figure?.canMove(target,oldBoard)
+                const target = row[j]
+                target.available = !!selectedCell?.figure?.canMove(target, oldBoard)
             }
         }
     }

@@ -13,7 +13,12 @@ export class Rook extends Figure{
     override canMove(target: Cell,oldBoard:Board): boolean {
         //console.log(this.cell.isEmptyVertical(target) + " " + target.figure?.name + " " + target.figure?.color)
         if(!super.canMove(target,oldBoard)) return false
-        console.log("rook:["+this.cell.x+";"+this.cell.y+"]"+this.firstMove)
         return this.cell.isEmptyVertical(target)||this.cell.isEmptyHorizotal(target)
     }
+    override canAttack(target: Cell): boolean {
+        if (super.canAttack(target)) return false
+        return this.cell.canAttackStraightOrDiagonal(target) && 
+               (this.cell.x === target.x || this.cell.y === target.y);
+    }
+    
 }

@@ -2,6 +2,12 @@ import { Colors } from "../Colors";
 import logo from '../assets/king-b.svg'
 import { Cell } from "../Cell";
 import { Board } from "../Board";
+import { Pawn } from "./Pawn";
+import { Bishop } from "./Bishop";
+import { Knight } from "./Knight";
+import { Rook } from "./Rook";
+import { Queen } from "./Queen";
+import { King } from "./King";
 export enum FigureNames {
     FIGURE = "figure",
     PAWN = "pawn",
@@ -10,7 +16,9 @@ export enum FigureNames {
     ROOK = "rook",
     QUEEN = "queen",
     KING = "king"
-} 
+}
+
+type FigureType = Pawn | Bishop | Knight | Rook | Queen | King;
 export class Figure {
     color: Colors;
     logo: typeof logo | null;
@@ -33,13 +41,19 @@ export class Figure {
         if( this?.color==target.figure?.color){
             return false
         }
-        if (target.figure?.name === FigureNames.KING) {
+        if (target.figure?.name === FigureNames.KING && target.figure?.color !== this.color) {
             return false;
         }
         return true;
     }
-    public getCopy(cell: Cell): Figure {
-        const copy = new Figure(this.color, cell);
+
+    public canAttack(cell: Cell): boolean {
+        return false;
+    }
+    
+    public getCopy(cell: Cell): FigureType {
+        
+        const copy: FigureType = new (this.constructor as new (color: Colors, cell: Cell) => FigureType)(this.color, cell);
         copy.name = this.name;
         copy.logo = this.logo;
         copy.firstMove = this.firstMove;
