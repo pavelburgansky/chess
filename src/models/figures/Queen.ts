@@ -16,7 +16,6 @@ export class Queen extends Figure {
       return this.cell.isEmptyVertical(target) || this.cell.isEmptyHorizotal(target)||this.cell.isEmptyDiagonal(target)
    }
    override canAttack(target: Cell): boolean {
-      debugger
       if (super.canAttack(target)) return false
       return this.cell.canAttackStraightOrDiagonal(target);
   }

@@ -27,7 +27,7 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, resetBoard, passTurn,
       setPassTurn(value => value == "bg-amber-50" ? "bg-green-700" : "bg-amber-50")
       setSelectedCell(null)
       // console.log("current board:")
-       console.log(board)
+       //console.log(board)
     }
   }
   useEffect(() => {

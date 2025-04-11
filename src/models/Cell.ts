@@ -31,7 +31,8 @@ export class Cell {
     public canAttackStraightOrDiagonal(target: Cell): boolean {
         const dx = Math.abs(this.x - target.x);
         const dy = Math.abs(this.y - target.y);
-
+        console.log("x=" + this.x, "y=" + this.y)
+        console.log("target x=" + target.x, "target y=" + target.y)
         // Вертикаль
         if (this.x === target.x && this.isEmptyVertical(target)) {
             return true;
@@ -39,6 +40,7 @@ export class Cell {
 
         // Горизонталь
         if (this.y === target.y && this.isEmptyHorizotal(target)) {
+
             return true;
         }
 
@@ -60,15 +62,12 @@ export class Cell {
         }
         const min: number = Math.min(this.y, target.y)
         const max: number = Math.max(this.y, target.y)
-        // console.log('current: ')
-        // console.log(this)
-        // console.log('turget: ')
-        // console.log(target)
         for (let y = min + 1; y < max; y++) {
             if (!this.board.getCell(this.x, y).isEmpty()) {
                 return false
             }
         }
+        if (this.isCheck(this, target, this.figure!.color, this.board)) return false
         return true;
     }
     public isEmptyHorizotal(target: Cell): boolean {
@@ -82,6 +81,7 @@ export class Cell {
                 return false
             }
         }
+        if (this.isCheck(this, target, this.figure!.color, this.board)) return false
         return true;
     }
     public isEmptyDiagonal(target: Cell): boolean {
@@ -93,12 +93,14 @@ export class Cell {
         for (let i = 1; i < absY; i++) {
             if (!this.board.getCell(this.x + dx * i, this.y + dy * i).isEmpty()) return false
         }
+        if (this.isCheck(this, target, this.figure!.color, this.board)) return false
         return true
     }
     public isEmptyForKnight(target: Cell): boolean {
         const absX = Math.abs(this.x - target.x)
         const absY = Math.abs(this.y - target.y)
         if (!((absX == 1 && absY == 2) || ((absX == 2 && absY == 1)))) return false
+        if (this.isCheck(this, target, this.figure!.color, this.board)) return false
         return true
     }
 
@@ -110,6 +112,7 @@ export class Cell {
                 const absY = Math.abs(this.y - target.y)
                 if (absX !== absY || absX != 1) return false
                 if (!(this.y - target.y === 1)) return false
+                if (this.isCheck(this, target, this.figure!.color, this.board)) return false
                 return true
             }
             else {
@@ -124,6 +127,7 @@ export class Cell {
                             return false
                         }
                     }
+                    if (this.isCheck(this, target, this.figure!.color, this.board)) return false
                     return true
                 }
                 else {
@@ -138,6 +142,8 @@ export class Cell {
                 const absY = Math.abs(this.y - target.y)
                 if (absX !== absY || absX != 1) return false
                 if (!(this.y - target.y === -1)) return false
+                if (this.isCheck(this, target, this.figure!.color, this.board)) return false
+
                 return true
             }
             else {
@@ -147,11 +153,12 @@ export class Cell {
                 if (this.figure.firstMove && (this.y - target.y == -1 || this.y - target.y == -2)) {
                     const min: number = Math.min(this.y, target.y)
                     const max: number = Math.max(this.y, target.y)
-                    for (let y = min + 1; y < max; y++) {                      
+                    for (let y = min + 1; y < max; y++) {
                         if (!this.board.getCell(this.x, y).isEmpty()) {
                             return false
                         }
                     }
+                    if (this.isCheck(this, target, this.figure!.color, this.board)) return false
                     return true
                 }
                 else {
@@ -159,6 +166,7 @@ export class Cell {
                 }
             }
         }
+        if (this.isCheck(this, target, this.figure!.color, this.board)) return false
         return false
     }
 
@@ -216,21 +224,17 @@ export class Cell {
         return true
     }
     public isCellUnderAttack(cell: Cell, color: Colors, oldBoard: Board): boolean {
-        
+        debugger
         const newBoard = cell.board.cloneBoard()
         const king = newBoard.getCell(cell.x, cell.y).findKing(color)
         const kingTo = newBoard.getCell(cell.x, cell.y)
-        console.log('king')
-        console.log(king)
-        console.log('kingTo')
-        console.log(kingTo)
         kingTo.figure = king!.figure
         kingTo.figure!.cell = kingTo
         king!.figure = null
         console.log(newBoard)
         for (let row of newBoard.cells) {
             for (let attacker of row) {
-                if (attacker.figure && attacker.figure.color !== color) {    
+                if (attacker.figure && attacker.figure.color !== color) {
                     if (attacker.figure.canAttack(kingTo)) {
                         return true
                     }
@@ -239,12 +243,39 @@ export class Cell {
         }
         return false
     }
- 
+    public isCheckForKing(cell: Cell, color: Colors, oldBoard: Board): boolean {
+        const newBoard = cell.board.cloneBoard()
+        const king = newBoard.getCell(cell.x, cell.y).findKing(color)
+        for (let row of newBoard.cells) {
+            for (let attacker of row) {
+                if (attacker.figure && attacker.figure.color !== color) {
+                    if (attacker.figure.canAttack(king!)) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+    public isCheck(currentCell: Cell, target: Cell, color: Colors, oldBoard: Board): boolean {
+        debugger
+        const newBoard = target.board.cloneBoard()
+        const current = newBoard.getCell(currentCell.x, currentCell.y)
+        const currentTo = newBoard.getCell(target.x, target.y)
+        if (currentTo.figure?.name == FigureNames.KING) return false
+        currentTo.figure = current!.figure
+        currentTo.figure!.cell = currentTo
+        current!.figure = null
+        if (currentTo?.isCheckForKing(currentTo, color, oldBoard)) return true
+        return false
+    }
+
 
 
     public longCastlingWhite(target: Cell): boolean {
-        if (this.figure?.firstMove && target.board.getCell(0, 7).figure?.firstMove && target.board.getCell(0, 7).figure?.name == FigureNames.ROOK) {
-            if(target.isCellUnderAttack(target.board.getCell(0, 7), Colors.WHITE, this.board)) return false
+        if (this.figure?.firstMove && target.board.getCell(0, 7).figure?.name == FigureNames.ROOK && target.board.getCell(0, 7).figure?.firstMove) {
+            if (target.isCellUnderAttack(target.board.getCell(2, 7), Colors.WHITE, this.board)) return false
+            if (target.isCellUnderAttack(target.board.getCell(3, 7), Colors.WHITE, this.board)) return false
             if (this.y == target.y && this.x - target.x == 2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure && !target.board.getCell(target.x + 1, target.y).figure) {
                 return true
             }
@@ -252,8 +283,9 @@ export class Cell {
         return false
     }
     public shortCastlingWhite(target: Cell): boolean {
-        if (this.figure?.firstMove && target.board.getCell(7, 7).figure?.firstMove && target.board.getCell(7, 7).figure?.name == FigureNames.ROOK) {
-            if(target.isCellUnderAttack(target.board.getCell(7, 7), Colors.WHITE, this.board)) return false
+        if (this.figure?.firstMove && target.board.getCell(7, 7).figure?.name == FigureNames.ROOK && target.board.getCell(7, 7).figure?.firstMove) {
+            if (target.isCellUnderAttack(target.board.getCell(5, 7), Colors.WHITE, this.board)) return false
+            if (target.isCellUnderAttack(target.board.getCell(6, 7), Colors.WHITE, this.board)) return false
             if (this.y == target.y && this.x - target.x == -2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure) {
                 return true
             }
@@ -261,8 +293,10 @@ export class Cell {
         return false
     }
     public longCastlingBlack(target: Cell): boolean {
-        if (this.figure?.firstMove && target.board.getCell(0, 0).figure?.firstMove && target.board.getCell(0, 0).figure?.name == FigureNames.ROOK) {
-            if(target.isCellUnderAttack(target.board.getCell(0, 0), Colors.BLACK, this.board)) return false
+        if (this.figure?.firstMove && target.board.getCell(0, 0).figure?.name == FigureNames.ROOK && target.board.getCell(0, 0).figure?.firstMove) {
+            if (target.isCellUnderAttack(target.board.getCell(2, 0), Colors.BLACK, this.board)) return false
+            if (target.isCellUnderAttack(target.board.getCell(3, 0), Colors.BLACK, this.board)) return false
+
             if (this.y == target.y && this.x - target.x == 2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure && !target.board.getCell(target.x + 1, target.y).figure) {
                 return true
             }
@@ -270,34 +304,14 @@ export class Cell {
         return false
     }
     public shortCastlingBlack(target: Cell): boolean {
-        if (this.figure?.firstMove && target.board.getCell(7, 0).figure?.firstMove && target.board.getCell(7, 0).figure?.name == FigureNames.ROOK) {
-            if (target.isCellUnderAttack(target.board.getCell(7, 0), Colors.BLACK, this.board)) return false
+        if (this.figure?.firstMove && target.board.getCell(7, 0).figure?.name == FigureNames.ROOK && target.board.getCell(7, 0).figure?.firstMove) {
+            if (target.isCellUnderAttack(target.board.getCell(6, 0), Colors.BLACK, this.board)) return false
+            if (target.isCellUnderAttack(target.board.getCell(5, 0), Colors.BLACK, this.board)) return false
             if (this.y == target.y && this.x - target.x == -2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure) {
                 return true
             }
         }
         return false
-    }
-    public checkForCheck(color: Colors, oldBoard: Board): boolean {
-        const kingCell = this.findKing(color);
-        if (!kingCell) return false;
-        for (let row of this.board.cells) {
-            for (let cell of row) {
-                if (cell.figure && cell.figure.color !== color) {
-                    if (cell.figure.canMove(kingCell, oldBoard)) {
-                        // console.log("current cell:")
-                        // console.log(cell)
-                        // console.log("king cell:")
-                        // console.log(kingCell)
-                        kingCell.color = Colors.RED;
-                        return true;
-                    }
-                }
-            }
-        }
-        // Если шаха нет — вернуть обычный цвет
-        kingCell.color = (kingCell.x + kingCell.y) % 2 === 0 ? Colors.WHITE : Colors.BLACK;
-        return false;
     }
 
     private findKing(color: Colors): Cell | null {
@@ -347,9 +361,6 @@ export class Cell {
             this.figure.firstMove = false
             target.figure.cell = target;
             this.figure = null
-            const colorKing = target.figure.color == Colors.WHITE ? Colors.BLACK : Colors.WHITE
-            // console.log(colorKing)
-            target.checkForCheck(colorKing, oldBoard)
             if (target.figure.name === FigureNames.PAWN && target.y == 0) {
                 const queen = new Queen(target.figure.color, target.figure.cell)
                 target.figure = queen;
