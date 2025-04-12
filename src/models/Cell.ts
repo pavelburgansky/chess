@@ -274,8 +274,9 @@ export class Cell {
 
     public longCastlingWhite(target: Cell): boolean {
         if (this.figure?.firstMove && target.board.getCell(0, 7).figure?.name == FigureNames.ROOK && target.board.getCell(0, 7).figure?.firstMove) {
-            if (target.isCellUnderAttack(target.board.getCell(2, 7), Colors.WHITE, this.board)) return false
-            if (target.isCellUnderAttack(target.board.getCell(3, 7), Colors.WHITE, this.board)) return false
+            if(this.isCheckForKing(target, Colors.WHITE, this.board)) return false
+            if (target.isCheck(this,target.board.getCell(2, 7), Colors.WHITE, this.board)) return false
+            if (target.isCheck(this,target.board.getCell(3, 7), Colors.WHITE, this.board)) return false
             if (this.y == target.y && this.x - target.x == 2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure && !target.board.getCell(target.x + 1, target.y).figure) {
                 return true
             }
@@ -284,8 +285,9 @@ export class Cell {
     }
     public shortCastlingWhite(target: Cell): boolean {
         if (this.figure?.firstMove && target.board.getCell(7, 7).figure?.name == FigureNames.ROOK && target.board.getCell(7, 7).figure?.firstMove) {
-            if (target.isCellUnderAttack(target.board.getCell(5, 7), Colors.WHITE, this.board)) return false
-            if (target.isCellUnderAttack(target.board.getCell(6, 7), Colors.WHITE, this.board)) return false
+            if(this.isCheckForKing(target, Colors.WHITE, this.board)) return false
+            if (target.isCheck(this,target.board.getCell(5, 7), Colors.WHITE, this.board)) return false
+            if (target.isCheck(this,target.board.getCell(6, 7), Colors.WHITE, this.board)) return false
             if (this.y == target.y && this.x - target.x == -2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure) {
                 return true
             }
@@ -294,8 +296,9 @@ export class Cell {
     }
     public longCastlingBlack(target: Cell): boolean {
         if (this.figure?.firstMove && target.board.getCell(0, 0).figure?.name == FigureNames.ROOK && target.board.getCell(0, 0).figure?.firstMove) {
-            if (target.isCellUnderAttack(target.board.getCell(2, 0), Colors.BLACK, this.board)) return false
-            if (target.isCellUnderAttack(target.board.getCell(3, 0), Colors.BLACK, this.board)) return false
+            if(this.isCheckForKing(target, Colors.BLACK, this.board)) return false
+            if (target.isCheck(this,target.board.getCell(2, 0), Colors.BLACK, this.board)) return false
+            if (target.isCheck(this,target.board.getCell(3, 0), Colors.BLACK, this.board)) return false
 
             if (this.y == target.y && this.x - target.x == 2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure && !target.board.getCell(target.x + 1, target.y).figure) {
                 return true
@@ -305,8 +308,9 @@ export class Cell {
     }
     public shortCastlingBlack(target: Cell): boolean {
         if (this.figure?.firstMove && target.board.getCell(7, 0).figure?.name == FigureNames.ROOK && target.board.getCell(7, 0).figure?.firstMove) {
-            if (target.isCellUnderAttack(target.board.getCell(6, 0), Colors.BLACK, this.board)) return false
-            if (target.isCellUnderAttack(target.board.getCell(5, 0), Colors.BLACK, this.board)) return false
+            if(this.isCheckForKing(target, Colors.BLACK, this.board)) return false
+            if (target.isCheck(this,target.board.getCell(6, 0), Colors.BLACK, this.board)) return false
+            if (target.isCheck(this,target.board.getCell(5, 0), Colors.BLACK, this.board)) return false
             if (this.y == target.y && this.x - target.x == -2 && !target.board.getCell(target.x, target.y).figure && !target.board.getCell(target.x - 1, target.y).figure) {
                 return true
             }
