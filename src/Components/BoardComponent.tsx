@@ -4,13 +4,15 @@ import CellComponent from './CellComponent'
 import { Cell } from '../models/Cell'
 interface BoardProps {
   board: Board,
-  setBoard: (board: Board) => void
-  resetBoard: () => void
-  passTurn: string
-  setPassTurn: React.Dispatch<React.SetStateAction<string>>
+  setBoard: (board: Board) => void,
+  resetBoard: () => void,
+  passTurn: string,
+  setPassTurn: React.Dispatch<React.SetStateAction<string>>,
+  startGame:boolean,
+  setStartGame: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const BoardComponent: FC<BoardProps> = ({ board, setBoard, resetBoard, passTurn, setPassTurn }) => {
+const BoardComponent: FC<BoardProps> = ({ board, setBoard, resetBoard, passTurn, setPassTurn,startGame, setStartGame }) => {
   const [flip, setFlip] = useState<boolean>(false)
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null)
   const [oldBoard, setOldBoard] = useState<Board>(board)
@@ -49,8 +51,12 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, resetBoard, passTurn,
     <div>
       <div className={`flex justify-between mb-20`}>
         <button className={`w-30 h-12 px-2 py-2 rounded-4xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-linear-to-r/srgb hover:from-amber-400 hover:via-amber-600 ] hover:to-amber-400`} onClick={() => resetBoard()}>Restart Game</button>
+        <button className={`w-30 h-12 px-2 py-2 rounded-4xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-linear-to-r/srgb hover:from-amber-400 hover:via-amber-600 ] hover:to-amber-400`} onClick={() => setStartGame(!startGame)}>Start Game</button>
         <button className={`w-30 h-12 px-2 py-2 rounded-4xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-linear-to-r/srgb hover:from-amber-400 hover:via-amber-600 ] hover:to-amber-400`} onClick={() => flipBoard()}>Flip the board</button>
       </div>
+      <div className={`text-white text-5xl font-bold mb-10`}>
+            {passTurn == "bg-amber-50" ? "White turn" : "Black turn"}
+            </div>
       <div className={`grid grid-cols-8 grid-rows-8 w-[calc(64px*8)] h-[calc(64px*8)] ${flip ? "transorm rotate-180" : ""}`}>
         {board.cells.map((row, index) =>
           <React.Fragment key={index}>

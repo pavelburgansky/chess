@@ -340,6 +340,7 @@ export class Cell {
                 }
             }
             if (this.figure.name == FigureNames.KING) {
+                if(this.figure.color == Colors.WHITE) {
                 if (this.longCastlingWhite(target)) {
                     let longCastlingRook: Rook = new Rook(Colors.WHITE, this.board.getCell(3, 7));
                     longCastlingRook.firstMove = false
@@ -350,6 +351,8 @@ export class Cell {
                     longCastlingRook.firstMove = false
                     this.board.getCell(7, 7).figure = null;
                 }
+            }
+            else {
                 if (this.longCastlingBlack(target)) {
                     let longCastlingRook: Rook = new Rook(Colors.BLACK, this.board.getCell(3, 0));
                     longCastlingRook.firstMove = false
@@ -360,6 +363,7 @@ export class Cell {
                     longCastlingRook.firstMove = false
                     this.board.getCell(7, 0).figure = null;
                 }
+            }
             }
             target.figure = this.figure;
             this.figure.firstMove = false
