@@ -13,7 +13,7 @@ export class Rook extends Figure{
     override canMove(target: Cell,oldBoard:Board): boolean {
         //console.log(this.cell.isEmptyVertical(target) + " " + target.figure?.name + " " + target.figure?.color)
         if(!super.canMove(target,oldBoard)) return false
-        return this.cell.isEmptyVertical(target)||this.cell.isEmptyHorizotal(target)
+        return this.cell.isEmptyVerticalCheck(target)||this.cell.isEmptyHorizotalCheck(target)
     }
     override canAttack(target: Cell): boolean {
         if (super.canAttack(target)) return false

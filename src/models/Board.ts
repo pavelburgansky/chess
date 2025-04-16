@@ -47,9 +47,7 @@ export class Board {
 
         return newBoard;
     }
-
-
-
+    
     public getCopyBoard(): Board {
         const newBoard: Board = new Board();
         newBoard.cells = this.cells;

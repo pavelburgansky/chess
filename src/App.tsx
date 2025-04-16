@@ -8,6 +8,7 @@ function App() {
   const [player1, setPlayer1] = useState<number>(600)
   const [player2, setPlayer2] = useState<number>(600)
   const [startGame, setStartGame] = useState<boolean>(false)
+  const [winner, setWinner] = useState<number|undefined>(0)
   function formatTime(seconds: number) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -25,6 +26,7 @@ function App() {
     setPlayer1(600)
     setPlayer2(600)
     setStartGame(false)
+    setWinner(0)
   }
   useEffect(() => {
     const interval = setInterval(() => {
@@ -53,6 +55,8 @@ function App() {
                 setPassTurn={setPassTurn}
                 startGame={startGame}
                 setStartGame={setStartGame}
+                winner={winner}
+                setWinner={setWinner}
               />
               <div className={`flex flex-col justify-center items-center ml-7`}>
                 <div className="text-white text-2xl font-bold mb-10 mr-10">

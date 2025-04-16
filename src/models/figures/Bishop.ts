@@ -13,7 +13,7 @@ export class Bishop extends Figure {
 
     override canMove(target: Cell,oldBoard:Board): boolean {
         if(!super.canMove(target,oldBoard)) return false
-        return this.cell.isEmptyDiagonal(target);
+        return this.cell.isEmptyDiagonalCheck(target);
     }
     override canAttack(target: Cell): boolean {
         if (super.canAttack(target)) return false
